@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+
+<mapper namespace="study">
+
+
+<resultMap type="Study" id="StudyResultMap">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "study_no" column="study_no"/>
+	<result property = "study_title" column="study_title"/>
+	<result property = "study_content_date" column="study_content_date"/>
+	<result property = "study_category" column="study_category"/>
+	<result property = "study_area" column="study_area"/>
+	<result property = "study_time" column="study_time"/>
+	<result property = "study_content" column="study_content"/>
+	<result property = "study_period" column="study_period"/>
+	<result property = "study_number_of_person" column="study_number_of_person"/>
+	<result property = "study_rigion" column="study_rigion"/>
+	<result property = "member_id" column="member_id"/>
+</resultMap>
+
+<resultMap type="Study" id="StudyResultMap2">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "member_id" column="member_id"/>
+	<result property = "study_no" column="study_no"/>
+	<result property = "study_title" column="study_title"/>
+</resultMap>
+
+<resultMap type="Study" id="StudyResultMap3">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "study_no" column="study_no"/>
+	<result property = "study_title" column="study_title"/>
+	<result property = "study_content_date" column="study_content_date"/>
+	<result property = "study_category" column="study_category"/>
+	<result property = "study_area" column="study_area"/>
+	<result property = "study_time" column="study_time"/>
+	<result property = "study_content" column="study_content"/>
+	<result property = "period_start" column="period_start"/>
+	<result property = "period_end" column="period_end"/>
+	<result property = "study_number_of_person" column="study_number_of_person"/>
+	<result property = "study_rigion" column="study_rigion"/>
+	<result property = "study_week" column="study_week"/>
+	<result property = "member_id" column="member_id"/>
+</resultMap>
+
+
+<!-- <select id="selectStudyById"  resultMap="StudyResultMap">
+	select study_no,
+		   study_title,
+		   study_content_date,
+		   study_category,
+		   study_area,
+		   study_time,
+		   study_content,
+		   study_period,
+		   study_number_of_person,
+		   study_rigion,
+		   member_id
+	from study
+</select> -->
+
+<select id="selectStudyTitleById"  resultMap="StudyResultMap">
+	select study_title, study_no		  
+	from study
+	where study_no = #{study_no}
+</select>
+
+<update id="updateTitle" parameterType="Study">
+	update study 
+	set study_title = #{study_title}
+	where study_no = #{study_no}
+</update>
+
+
+
+<insert id ="insertStudy" parameterType = "Study">
+	insert into Study( study_no,
+					   study_title, 
+					   study_content_date,
+					   study_category,
+					   study_area, 
+					   study_time, 
+					   study_content,
+					   study_number_of_person,
+					   study_rigion,
+					   study_week,
+					   member_id,
+					   period_start, 
+					   period_end 
+					   )
+			values(
+			SEQ_study.nextval,
+			#{study_title},
+			to_char(sysdate,'YY/MM/DD'),
+			#{study_category},
+			#{study_area},
+			#{study_time},
+			#{study_content},
+			#{study_number_of_person},
+			#{study_rigion},
+			#{study_week},
+			#{member_id},
+			#{period_start},
+			#{period_end}
+		)
+</insert>
+
+<update id="updateStudy" parameterType="Study">
+	update study
+	set 	study_title = #{study_title},
+			study_content_date = to_char(sysdate,'YY/MM/DD'),
+			study_category = #{study_category},
+			study_area = #{study_area},
+			study_time = #{study_time},
+			study_content = #{study_content},
+			period_start = #{period_start},
+			period_end = #{period_end},
+			study_number_of_person = #{study_number_of_person},
+			study_rigion = #{study_rigion},
+			study_week = #{study_week}
+	where study_no = #{study_no}
+
+</update>
+
+<delete id="deleteStudy" parameterType="int">
+delete from study
+where study_no = #{value}
+</delete>
+
+<select id="selectStudyByNo" parameterType="int" resultMap="StudyResultMap3">
+	select *
+	from study
+	where study_no = #{study_no}
+	 
+</select>
+
+<select id= "selectAllStudy"  resultMap="StudyResultMap3" >
+select study_no, study_title, study_content_date, study_category, member_id, study_area, 
+	   study_rigion, study_week, study_time
+from study
+order by study_no desc
+</select>
+
+<select id="selectStudyPage" parameterType="map" resultMap="StudyResultMap3" >
+		select	  rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time from (
+			select   rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+				from (
+						select	  study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+						from	  study
+						order by  study_no desc
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+</select>
+
+<select id="selectStudyCount" resultType="int">
+		select count(0) from study
+</select>
+
+<select id="selectCategory" parameterType="map" resultMap="StudyResultMap3" >
+		select	  rownum as rnum, study_no, study_title, study_content_date, study_category, study_area, study_time, study_rigion, study_week, member_id from (
+			select   rownum as rnum, study_no, study_title, study_content_date, study_category, study_area, study_time, study_rigion, study_week, member_id
+				from (
+						select	  study_no, study_title, study_content_date, study_category, study_area, study_time, study_rigion, study_week, member_id
+						from	  study
+						where study_category = #{study_category}
+						order by  study_no desc
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+</select>
+
+<select id="searchStudyByTitle" parameterType="map" resultMap="StudyResultMap3">
+ 		select	  rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time from (
+			select   rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+				from (
+						select	  study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+						from	  study
+						where  study_title like concat(concat('%',#{study_title}),'%')
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+</select>
+
+<select id="searchStudyById" parameterType="map" resultMap="StudyResultMap3">
+	select	  rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time from (
+			select   rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+				from (
+						select	  study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+						from	  study
+						where  member_id like concat(concat('%',#{member_id}),'%')
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+</select>
+
+<select id="selectStudyTitleSearchCount" resultType="int" parameterType="string">
+	select count(0) from study
+	where  study_title like concat(concat('%', #{study_itle}),'%')
+</select>
+	
+<select id="selectStudyIdSearchCount" resultType="int" parameterType="string">
+	select count(0) from study
+	where  member_id like concat(concat('%', #{member_id}),'%')
+</select>
+
+<select id="selectCategoryCount" resultType="int" parameterType="string">
+	select count(0) from study
+	where  study_category like concat(concat('%', #{study_category}),'%')
+</select>
+
+<select id="selectStudyByArea" parameterType="map" resultMap="StudyResultMap3">
+	select rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time from (
+			select   rownum as rnum, study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+				from (
+						select	  study_no, study_title, study_content_date, study_category, member_id, study_area, study_rigion,study_week,study_time 
+						from	  study
+						<where>
+							<if test="studyArea != null">
+								study_area = #{studyArea}
+							</if>
+							<if test="studyRigion != null">
+								and study_rigion = #{studyRigion}
+							</if>
+						</where>
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+</select>
+<select id="selectStudyByAreaCount" parameterType="map" resultType="int">
+	select count(0) from study
+	<where>
+		<if test="studyArea != null">
+			study_area = #{studyArea}
+		</if>
+		<if test="studyRigion != null">
+			and study_rigion = #{studyRigion}
+		</if>
+	</where>
+</select>
+
+<select id="selectCurrentStudyNo" resultType="int">
+	select seq_study.currval from dual
+</select>
+</mapper>

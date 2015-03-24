@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="book">		<!-- 이름의 중복을 허용하게 해줌 -->	
+
+
+	<insert id="insertBook" parameterType="Book">
+		INSERT INTO BOOK(book_no, member_id, trade_category, book_category, 
+							book_title, book_content_date, book_content) 
+		VALUES (
+				SEQ_BOOK.nextval, #{memberId}, #{tradeCategory}, #{bookCategory}, #{bookTitle}, 
+							to_char(sysdate, 'YY/MM/DD'), #{bookContent})
+	</insert>
+	
+	
+	<update id="updateBook" parameterType="Book">
+		UPDATE 	BOOK 
+		SET   	trade_category = #{tradeCategory}, book_category = #{bookCategory}, 
+					book_title = #{bookTitle}, book_content = #{bookContent}
+		WHERE 	book_no = #{bookNo}
+	</update>
+	
+	
+	<delete id="deleteBook" parameterType="int">
+		delete from book
+		where  book_no = #{value}
+	</delete>
+	
+	
+	<resultMap type="Book" id="BookResultMap" >
+		<result property="bookNo" column="book_no"/>
+		<result property="memberId" column="member_id"/>
+		<result property="tradeCategory" column="trade_category"/>
+		<result property="bookCategory" column="book_category"/>
+		<result property="bookTitle" column="book_title"/>
+		<result property="bookContent" column="book_content"/>
+		<result property="bookContentDate" column="book_content_date"/>
+	</resultMap>
+	
+	
+	<select id="selectAllBook" resultMap="BookResultMap">
+		select	book_no, member_id, trade_category, book_category, book_title, book_content_date
+		from   	book
+		order by book_no desc
+	</select>
+	
+	
+	<select id="selectBookContent" parameterType="int" resultMap="BookResultMap">
+		select	  	book_no, member_id, trade_category, book_category, book_title, 
+				    book_content_date, book_content
+		from	  	book
+		where	  	book_no = #{value}
+	</select>
+
+
+	<select id="searchBookByTitle" parameterType="map" resultMap="BookResultMap">
+		select	  rownum as rnum, book_no, member_id, trade_category, book_category, book_title, book_content_date from (
+			select   rownum as rnum, book_no, member_id, trade_category, book_category, book_title, book_content_date 
+				from (
+						select	  book_no, member_id, trade_category, book_category, book_title, book_content_date
+						from	  book
+						where	  book_title like concat(concat('%',#{bookTitle}),'%')
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+	</select>
+	
+	<select id="selectBookPage" parameterType="map" resultMap="BookResultMap" >
+		select	  rownum as rnum, book_no, member_id, trade_category, book_category, book_title, book_content_date from (
+			select   rownum as rnum, book_no, member_id, trade_category, book_category, book_title, book_content_date 
+				from (
+						select	  book_no, member_id, trade_category, book_category, book_title, book_content_date
+						from	  book
+						order by  book_no desc
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+	</select>
+	
+	<select id="searchBookById" parameterType="map" resultMap="BookResultMap">
+		select	  rownum as rnum, book_no, member_id, trade_category, book_category, book_title, book_content_date from (
+			select   rownum as rnum, book_no, member_id, trade_category, book_category, book_title, book_content_date 
+				from (
+						select	  book_no, member_id, trade_category, book_category, book_title, book_content_date
+						from	  book
+						where	  member_id like concat(concat('%',#{memberId}),'%')
+					 )
+			where rownum &lt;= #{end})
+		where rnum &gt;= #{start}
+	</select>
+	
+	
+	<select id="selectCount" resultType="int">
+		select count(0) from book
+	</select>
+	
+	<select id="selectTitleSearchCount" resultType="int" parameterType="string">
+		select count(0) from book
+		where  book_title like concat(concat('%', #{bookTitle}),'%')
+	</select>
+	
+	<select id="selectIdSearchCount" resultType="int" parameterType="string">
+		select count(0) from book
+		where  member_id like concat(concat('%', #{memberId}),'%')
+	</select>
+</mapper>

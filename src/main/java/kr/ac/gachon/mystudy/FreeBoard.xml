@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="freeboard"> 
+    
+  <resultMap type="FreeBoard" id="FreeBoardResultMap" 
+      	extends="FreeBoardResultMapBase">
+      <result property="freeboardNo" column="freeboard_no"/>
+      <result property="freeboardContentDate" column="freeboard_content_date"/>
+      <result property="memberId" column="member_id"/> 
+  </resultMap>
+  <resultMap type="FreeBoard" id="FreeBoardResultMapBase">
+      <result property="freeboardTitle" column="freeboard_title"/>
+      <result property="freeboardContent" column="freeboard_content"/>
+  </resultMap>
+  
+  <insert id="insertFreeBoard" parameterType="FreeBoard">
+            
+      insert into freeboard(
+      			freeboard_no,
+      			member_id,
+      			freeboard_title,
+      			freeboard_content_date,
+      			freeboard_content)
+      values (
+      		SEQ_FREEBOARD.nextval,
+      		#{memberId},
+      		#{freeboardTitle},
+      		to_char(sysdate,'YY/MM/DD'),
+      		#{freeboardContent}
+      )
+  </insert>
+  
+  <update id="updateFreeBoard" parameterType="FreeBoard">
+        update freeboard
+        set freeboard_title = #{freeboardTitle},
+        	freeboard_content = #{freeboardContent},
+        	freeboard_content_date = to_char(sysdate, 'YY/MM/DD')
+        where freeboard_no = #{freeboardNo}
+    </update>
+    
+  <delete id="deleteFreeBoard" parameterType="int">
+      delete from freeboard
+      where freeboard_no = #{value}
+  </delete>
+  
+  <select id="selectFreeBoardAll" resultMap="FreeBoardResultMap">
+      select freeboard_no, member_id, freeboard_title, freeboard_content_date
+      from freeboard
+      order by freeboard_no desc
+  </select>
+    
+  <select id="selectFreeBoardByNo" parameterType="int" resultMap="FreeBoardResultMap">
+      select freeboard_no, member_id, freeboard_title, freeboard_content_date,
+      			freeboard_content
+      from freeboard
+      where freeboard_no = #{freeboardNo}
+  </select>
+  
+  <select id="selectFreeBoardByTitle" parameterType="map"
+      resultMap="FreeBoardResultMap">
+      select rownum as rnum, freeboard_no, member_id, freeboard_title, freeboard_content_date from (
+      		select rownum as rnum, freeboard_no, member_id, freeboard_title, freeboard_content_date
+      			from (
+            			select freeboard_no, member_id, freeboard_title, freeboard_content_date
+                  		from freeboard
+                  		where freeboard_title like concat(concat('%',#{freeboardTitle}),'%')
+                  		order by freeboard_no desc
+            			)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+  </select>
+  
+  <select id="selectFreeBoardByMemberId" parameterType="map"
+      resultMap="FreeBoardResultMap">
+      select rownum as rnum, freeboard_no, member_id, freeboard_title, freeboard_content_date from (
+      		select rownum as rnum, freeboard_no, member_id, freeboard_title, freeboard_content_date
+      			from (
+      				select freeboard_no, member_id, freeboard_title, freeboard_content_date
+      				from freeboard
+     				where member_id like concat(concat('%',#{memberId}),'%')
+     				order by freeboard_no desc
+     				)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+  </select>
+  
+	<select id="selectFreeBoardPage" resultMap="FreeBoardResultMap" parameterType="map">
+      select rownum as rnum, freeboard_no, member_id, freeboard_title, freeboard_content_date from (
+      		select rownum as rnum, freeboard_no, member_id, freeboard_title, freeboard_content_date
+      			from (
+            			select freeboard_no, member_id, freeboard_title, freeboard_content_date
+            			from freeboard
+            			order by freeboard_no desc
+            			)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+  </select>
+  
+	<select id="selectFreeboardCount" resultType="int">
+	    select count(0) from freeboard
+	</select>
+	
+	<select id="selectSearchCount" resultType="int" parameterType="string">
+	    select count(0) from freeboard where freeboard_title like concat(concat('%',#{freeboardTitle}),'%')
+	</select>
+	<select id="selectSearchIdCount" resultType="int" parameterType="string">
+	    select count(0) from freeboard where member_id like concat(concat('%',#{value}),'%')
+	</select>
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="studyroom">		<!-- 이름의 중복을 허용하게 해줌 -->
+
+
+	<insert id="insertStudyRoom" parameterType="StudyRoom">
+		INSERT INTO STUDYROOM (study_room_no, study_room_category,  study_room_title,
+								study_room_image, study_room_content) 
+		VALUES (seq_studyroom.nextval, #{studyRoomCategory}, #{studyRoomTitle},
+					#{studyRoomImage}, #{studyRoomContent})
+	</insert>	
+	
+	<update id="updateStudyRoom" parameterType="StudyRoom">
+		UPDATE 	studyroom 
+		SET   	study_room_no = #{studyRoomNo}, study_room_category = #{studyRoomCategory}, 
+					study_room_title = #{studyRoomTitle}, study_room_image = #{studyRoomImage}, 
+					study_room_content = #{studyRoomContent}
+		WHERE 	study_room_no = #{studyRoomNo}
+	</update>
+	
+	<delete id="deleteStudyRoom" parameterType="int">
+		delete from studyroom
+		where  study_room_no = #{value}
+	</delete>
+	
+	
+	<resultMap type="StudyRoom" id="StudyRoomResultMap">
+		<result property="studyRoomNo" column="study_room_no"/>
+		<result property="studyRoomCategory" column="study_room_category"/>
+		<result property="studyRoomTitle" column="study_room_title"/>
+		<result property="studyRoomImage" column="study_room_image"/>
+		<result property="studyRoomContent" column="study_room_content"/>
+	</resultMap>
+	
+	
+	<select id="selectAllStudyRoom" resultMap="StudyRoomResultMap">
+		select	study_room_no, study_room_title, study_room_image, study_room_content
+		from	studyroom
+		order by study_room_no desc
+	</select>
+
+
+	<select id="selectStudyRoomByCategory" parameterType="string" resultMap="StudyRoomResultMap">
+		select	study_room_no, study_room_title, study_room_image, study_room_content
+		from	studyroom
+		where	study_room_category = #{value}
+		order by study_room_no desc
+	</select>
+	
+	
+	<select id="searchStudyRoom" parameterType="string" resultMap="StudyRoomResultMap">
+		select	study_room_no, study_room_title, study_room_category, study_room_image, study_room_content
+		from	studyroom
+		where   study_room_title like concat(concat('%',#{value}),'%') 
+		or	    study_room_content like concat(concat('%',#{value}),'%')
+	</select>
+	
+	
+
+</mapper>

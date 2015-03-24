@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+
+<mapper namespace="study_check">
+
+<resultMap type="StudyCheck" id="study_checkResultMap">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "study_no" column="study_no"/>
+	<result property = "my_study_date" column="my_study_dat"/>
+	<result property = "member_id" column="member_id"/>
+	<result property = "attendance_information" column="attendance_information"/>
+	<result property = "penalty" column="penalty"/>
+	<result property = "member_name" column="member_name"/>
+</resultMap>
+
+
+<!-- <select id="selectAllStudyCheck" parameterType="int" resultMap="study_checkResultMap">
+	select *
+	from study_check
+	where study_no = #{value}
+</select> -->
+
+
+<!-- <select id="selectStudyNameByDate" parameterType="map" resultMap="study_checkResultMap">
+	select member_name
+	from study_check
+	where my_study_date = #{my_study_date} and study_no =#{study_no}
+</select> -->
+
+
+<!-- 출석, 지각 체크  -->
+<update id="updateStudyAttendanceCheck" parameterType="StudyCheck">
+	update study_check
+	set attendance_information = #{attendance_information}
+	where my_study_date = #{my_study_date} 
+	and member_id = #{member_id} 
+</update>
+
+
+<update id="updatePenalty" parameterType="StudyCheck">
+update study_check
+set penalty =(
+SELECT DECODE(ATTENDANCE_INFORMATION, 
+'1', LATENESS_MONEY, 
+'2', ABSANT_MONEY,
+0) as 벌금
+FROM study_check  join study_penalty  on study_check.study_no = study_penalty.study_no
+where study_check.my_study_date = #{my_study_date} and study_check.member_id =#{member_id})
+where study_check.my_study_date = #{my_study_date} and study_check.member_id =#{member_id}
+</update>
+
+
+
+<select id="selectAttendanceCount" parameterType="map" resultType="int">
+	select count(*)
+	from study_check
+	where attendance_information = #{attendance_information} and member_id =#{member_id} and study_no =#{study_no}
+</select>
+
+<select id="selectSumPenalty" parameterType="map" resultType="int">
+	select sum(PENALTY) 
+	from study_check 
+	where member_id = #{member_id} and study_no =#{study_no}
+</select>
+
+
+<insert id="insertMy_Study_Check" parameterType="StudyCheck">
+   insert into study_check(
+   study_no,
+   my_study_date,
+   member_id,
+   attendance_information,
+   penalty,
+   member_name
+   )
+   values(
+   #{study_no},
+   #{my_study_date},
+   #{member_id},
+   #{attendance_information},
+   #{penalty},
+   #{member_name}
+   )
+</insert>
+
+
+
+<update id="updateStudy_Check_Name" parameterType="StudyPenalty">
+	Update Study_Check
+	Set member_name = #{member_name}
+	where my_study_date = #{my_study_date} and member_id =#{member_id} and study_no = #{study_no}
+</update>
+
+
+
+<delete id="removeMyStudyCheck" parameterType="map">
+	Delete From Study_Check
+	where member_id = #{member_id} and study_no = #{study_no}
+</delete>
+
+
+
+
+</mapper>
+
+
+
+
+
+
+

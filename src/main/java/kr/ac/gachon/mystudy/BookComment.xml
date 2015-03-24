@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="bookComment">		<!-- 이름의 중복을 허용하게 해줌 -->
+
+	<insert id="insertBookComment" parameterType="BookComment">
+		INSERT INTO BOOK_COMMENT(comment_no, book_no, comment_date, comm, member_id) 
+		VALUES (
+				SEQ_BOOK_COMMENT.nextval, #{bookNo}, to_char(sysdate, 'YY/MM/DD'), 
+				#{comm}, #{memberId})
+
+	</insert>
+	
+	<update id="updateBookComment" parameterType="BookComment">
+		UPDATE 	BOOK_COMMENT 
+		SET   	comm = #{comm}
+		WHERE 	comment_no = #{commentNo}
+	</update>
+	
+	<delete id="deleteBookComment" parameterType="int">
+		delete from book_comment
+		where  comment_no = #{value}
+	</delete>
+	
+	
+	<resultMap type="BookComment" id="BookCommentResultMap">
+		<result property="commentNo" column="comment_no" />
+		<result property="comm" column="comm" />
+		<result property="memberId" column="member_id" />
+		<result property="commentDate" column="comment_date" />
+	</resultMap>
+	
+	<select id="selectBookCommentByBookNo" parameterType="int" resultMap="BookCommentResultMap">
+		select	comment_no, comm, member_id, comment_date
+		from	book_comment
+		where	book_no = #{value}
+		order by comment_no
+	</select>
+
+</mapper>

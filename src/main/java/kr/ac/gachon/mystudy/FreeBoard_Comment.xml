@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="freeboard_comment"> 
+    <resultMap type="FreeBoard_Comment" id="FreeBoardCommResultMap">
+        <result property="commentNo" column="comment_no"/>
+        <result property="freeboardNo" column="freeboard_no"/>
+        <result property="commentDate" column="comment_date"/>
+        <result property="comm" column="comm"/>
+        <result property="memberId" column="member_id"/>
+    </resultMap>
+    
+  <insert id="insertFreeBoardComm" parameterType="FreeBoard_Comment">
+      insert into freeboard_comment(
+      			comment_no,
+      			freeboard_no,
+      			comment_date,
+      			comm,
+      			member_id)
+      values (
+      		SEQ_FREEBOARD_COMMENT.nextval,
+      		#{freeboardNo},
+      		to_char(sysdate,'YY/MM/DD'),
+      		#{comm},
+      		#{memberId}
+      )
+  </insert>
+  
+  <update id="updateFreeBoardComm" parameterType="FreeBoard_Comment">
+        update freeboard_comment
+        set comment_date = to_char(#{commentDate}, 'YY/MM/DD'),
+        	comm = #{comm}
+        where comment_no = #{commentNo}
+   </update>
+   
+  	<delete id="deleteFreeBoardComm" parameterType="int">
+  	    delete from freeboard_comment
+  	    where comment_no = #{commentNo}
+  	</delete>
+  	
+  	<select id="selectFreeBoardCommAll" parameterType="int"
+  	    resultMap="FreeBoardCommResultMap">
+  	    select 
+  	    	comment_no,
+      		comment_date,
+      		comm,
+      		member_id
+      	from freeboard_comment
+      	where freeboard_no = #{value}
+      	order by comment_no desc
+  	</select>
+</mapper>

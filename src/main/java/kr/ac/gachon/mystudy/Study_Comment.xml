@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+
+<mapper namespace="study_comment">
+
+
+
+<resultMap type="Study_Comment" id="StudyCommentResultMap">
+	<result property = "commentNo" column="comment_no"/>
+	<result property = "studyNo" column="study_no"/>
+	<result property = "commentDate" column="comment_date"/>
+	<result property = "comm" column="comm"/>
+	<result property = "memberId" column="member_id"/>
+</resultMap>
+
+
+<insert id = "insertStudyComment" parameterType = "Study_Comment">
+	insert into study_comment(comment_no, 
+								study_no, 
+								comment_date, 
+								comm, 
+								member_id)
+	values(
+		SEQ_STUDY_COMMENT.nextval,
+		#{studyNo},
+		to_char(sysdate,'YY/MM/DD'),
+		#{comm},
+		#{memberId}
+	)
+</insert>
+
+
+<insert id="updateStudyComment" parameterType="Study_Comment">
+	update study_comment
+	set 	
+			study_no = #{studyNo}, 
+			comment_date = #{commentDate}, 
+			comm = #{comm}, 
+			member_id = #{memberId}
+	where comment_no = #{commentNo}
+
+</insert>
+
+<insert id="deleteStudyComment" parameterType="int">
+delete from study_comment
+where comment_no = #{commentNo} 
+</insert>
+
+
+
+<select id="selectAllComment" resultMap="StudyCommentResultMap">
+select comment_no, comment_date, comm, member_id
+from study_comment
+order by comment_no desc
+</select>
+
+<select id="selectComment" parameterType = "int" resultMap="StudyCommentResultMap" >
+select comment_no, comment_date, comm, member_id
+from study_comment
+where study_no = #{studyNo}
+order by comment_no desc
+</select>
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

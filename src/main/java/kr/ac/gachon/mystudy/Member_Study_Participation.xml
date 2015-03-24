@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="member_study_participation">
+
+
+<resultMap type="MemberStudyParticipation" id="member_study_participationResultMap">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+ 	<result property = "member_id" column="member_id"/> 
+	<association property="study" resultMap="study.StudyResultMap2"/>
+</resultMap>
+
+<resultMap type="Member" id="member_study_list_Map">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "member_id" column="member_id"/>
+	<result property = "member_name" column="member_name"/>
+	<collection property="studyList" column="member_id" 
+		select="selectStudyParticipationListById"/>
+</resultMap>
+
+
+<select id="selectMemberStudyById" parameterType="String" resultMap="member_study_participationResultMap">
+	select *
+	from member_study_participation p
+	where p.member_id =#{value}
+</select>
+
+
+<select id="selectMemberList" parameterType="String" resultMap="member_study_list_Map">
+	select member_id,
+		   member_name
+	from member
+</select>
+
+<select id="selectStudyParticipationListById" parameterType="String" resultMap="study.StudyResultMap2">
+	select s.member_id, s.study_category, s.study_title, s.study_no
+	from member_study_participation p 
+	join study s on p.study_no = s.study_no
+	where p.member_id = #{value}
+</select>
+
+
+<!-- <select id="selectMyStudyById" parameterType="String" 
+	resultMap="member_study_participationResultMap">
+	select s.member_id, s.study_no, s.study_title
+	from member_study_participation p 
+	join study s on p.study_no = s.study_no
+  	where p.member_id = #{value}
+</select>
+	where p.member_id = #{value} -->
+
+<select id="selectByTitle" parameterType="String" resultMap="member_study_participationResultMap">
+	select s.study_title
+	from member_study_participation p 
+	join study s on p.study_no = s.study_no
+	where p.member_id = #{member_id} and p.study_no = #{study_no}
+</select>
+
+
+<select id="selectStudyByStudyNo" parameterType="String" resultMap="member_study_participationResultMap">
+	select member_id
+	from member_study_participation  
+	where study_no = #{study_no}
+</select>
+
+
+
+<delete id="removeMyStudy" parameterType="map">
+	delete from member_study_participation p
+	where p.member_id = #{member_id} and p.study_no = #{study_no}
+</delete>
+
+
+<!-- <select id="selectByMemberCount" parameterType="int" resultMap="member_study_participationResultMap">
+	select p.member_id
+	from member_study_participation p 
+	where p.study_no = #{value}
+</select> -->
+
+<select id="selectByMemberCount" parameterType="int" resultType="int">
+	select count(*)
+	from member_study_participation p 
+	where p.study_no = #{value}
+</select>
+
+<insert id="insertParticipation" parameterType="map">
+	insert into member_study_participation(member_id, study_no)
+	values(		
+			#{memberId},
+			#{study_no}
+		)
+</insert>
+
+</mapper>

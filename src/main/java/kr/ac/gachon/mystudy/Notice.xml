@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+
+<mapper namespace="notice">
+
+<insert id ="insertNotice" parameterType = "Notice">
+	insert into Notice(notice_no,
+						notice_title,
+						notice_content_date,
+						notice_content,
+						notice_main_category
+						)
+			values(
+			SEQ_NOTICE.nextval,
+			#{noticeTitle},
+			to_char(sysdate,'YY/MM/DD'),
+			#{noticeContent},
+			#{noticeMainCategory}
+		)
+
+</insert>
+
+<insert id="updateNotice" parameterType="Notice">
+	update notice
+	set notice_title = #{noticeTitle},
+		notice_content_date = to_char(sysdate, 'YY/MM/DD'),
+		notice_content = #{noticeContent},
+		notice_main_category = #{noticeMainCategory}
+	where notice_no = #{noticeNo}
+
+</insert>
+
+<insert id="deleteNotice" parameterType="int">
+delete from Notice
+where notice_no=#{noticeNo}
+</insert>
+
+<resultMap type="Notice" id="NoticeResultMap">
+		<result property = "noticeNo" column="notice_no"/>
+		<result property = "noticeTitle" column="notice_title"/>
+		<result property = "noticeContentDate" column="notice_content_date"/>
+		<result property = "noticeContent" column="notice_content"/>
+		<result property = "noticeMainCategory" column="notice_main_category"/>
+</resultMap>
+
+<resultMap type="Notice" id="NoticeResultMap2">
+		<result property = "noticeNo" column="notice_no"/>
+		<result property = "noticeTitle" column="notice_title"/>
+		<result property = "noticeContentDate" column="notice_content_date"/>
+		<result property = "noticeMainCategory" column="notice_main_category"/>
+</resultMap>
+
+
+
+<select id= "selectAllNotice"  resultMap="NoticeResultMap2" >
+   	select *
+   	from notice
+   	order by notice_no desc
+</select>
+
+<select id="searchContent" parameterType= "string" resultMap = "NoticeResultMap">
+select *
+from   notice
+where  notice_content like concat(concat('%',#{notice_content}),'%')
+</select>
+
+<select id="searchTitle" parameterType="string" resultMap="NoticeResultMap">
+
+select *
+from   notice
+where  notice_title like concat(concat('%',#{notice_title}),'%')
+</select>
+
+
+<select id="searchContentTitle" parameterType="map" resultMap="NoticeResultMap2">
+select *
+from   notice
+where  notice_content like concat(concat('%',#{notice_content}),'%')
+or     notice_title like concat(concat('%',#{notice_title}),'%')
+
+</select>
+
+<select id="checkContent" parameterType="int" resultMap="NoticeResultMap">
+select *
+from notice
+where notice_no = #{value}
+</select>
+
+<select id="selectNoticePage" parameterType="map" resultMap="NoticeResultMap">
+      select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category from (
+      		select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category
+      			from (
+            			select notice_no, notice_title, notice_content_date, notice_main_category
+            			from notice
+            			order by notice_no desc
+            			)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+</select>
+
+<select id="selectNoticeCount" resultType="int">
+	    select count(0) from notice
+</select>
+
+<select id="selectNoticeCategory" parameterType="map" resultMap="NoticeResultMap">
+      select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category from (
+      		select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category
+      			from (
+            			select notice_no, notice_title, notice_content_date, notice_main_category
+            			from notice
+            			where notice_main_category = #{category}
+            			order by notice_no desc
+            			)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+</select>
+
+<select id="selectNoticeByTitle" parameterType="map"
+      resultMap="NoticeResultMap">
+      select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category from (
+      		select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category
+      			from (
+            			select notice_no, notice_title, notice_content_date, notice_main_category
+            			from notice
+            			where  notice_title like concat(concat('%',#{noticeTitle}),'%')
+                  		order by notice_no desc
+            			)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+  </select>
+  
+  <select id="selectNoticeByContent" parameterType="map"
+      resultMap="NoticeResultMap">
+      select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category from (
+      		select rownum as rnum, notice_no, notice_title, notice_content_date, notice_main_category
+      			from (
+      				select notice_no, notice_title, notice_content_date, notice_main_category
+            			from notice
+            			where  notice_content like concat(concat('%',#{noticeContent}),'%')
+     					order by notice_no desc
+     				)
+      		where rownum &lt;= #{end})
+		where rnum &gt;=#{start}
+  </select>
+
+	<select id="selectNoticeSearchCount" resultType="int" parameterType="string">
+	    select count(0) from notice where notice_title like concat(concat('%',#{value}),'%')
+	</select>
+	<select id="selectNoticeSearchContentCount" resultType="int" parameterType="string">
+	    select count(0) from notice where notice_content like concat(concat('%',#{value}),'%')
+	</select>
+</mapper>

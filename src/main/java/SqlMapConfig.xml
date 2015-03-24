@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+<properties resource = "db.properties"/>
+
+
+<!-- 별칭주기 -->
+<typeAliases>
+  	<typeAlias type="kr.ac.gachon.model.vo.Member" alias="Member"/>
+ 	<typeAlias type="kr.ac.gachon.model.vo.Study" alias="Study"/>
+	<typeAlias type="kr.ac.gachon.model.vo.Study_Comment" alias="Study_Comment"/>
+ 	<typeAlias type="kr.ac.gachon.model.vo.MemberStudyParticipation" alias="MemberStudyParticipation"/>
+ 	<typeAlias type="kr.ac.gachon.model.vo.StudyInfo" alias="StudyInfo"/>
+ 	<typeAlias type="kr.ac.gachon.model.vo.StudyPenalty" alias="StudyPenalty"/>
+ 	<typeAlias type="kr.ac.gachon.model.vo.StudyCheck" alias="StudyCheck"/>
+ 	<typeAlias type="kr.ac.gachon.model.vo.FreeBoard" alias="FreeBoard" />
+ 	<typeAlias type="kr.ac.gachon.model.vo.FreeBoardComment"
+			alias="FreeBoard_Comment" />
+	<typeAlias type="kr.ac.gachon.model.vo.Notice" alias="Notice"/>
+	<typeAlias type="kr.ac.gachon.model.vo.Book" alias="Book"/>
+	<typeAlias type="kr.ac.gachon.model.vo.BookComment" alias="BookComment"/>
+	<typeAlias type="kr.ac.gachon.model.vo.StudyRoom" alias="StudyRoom"/>
+</typeAliases>
+
+
+<environments default="env">
+	<environment id = "env">
+	<transactionManager type="JDBC"/>
+	     <dataSource type="POOLED">
+	     <property name = "driver" value="${driver}"/>
+		 <property name = "url" value="${url}"/>
+		 <property name = "username" value="${username}"/>
+		 <property name = "password" value="${password}"/>
+		</dataSource>
+	</environment>
+</environments>
+
+
+<mappers>
+	<mapper resource="kr/ac/gachon/mystudy/Member.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Study.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Member_Study_Participation.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Study_Info.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Study_Penalty.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Study_Check.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/FreeBoard.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/FreeBoard_Comment.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Notice.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/Book.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/BookComment.xml"/>
+	<mapper resource="kr/ac/gachon/mystudy/StudyRoom.xml"/>	
+	<mapper resource="kr/ac/gachon/mystudy/Study_Comment.xml"/>
+</mappers>
+
+</configuration>
+

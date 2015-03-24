@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+
+<mapper namespace="study_info">
+
+<resultMap type="StudyInfo" id="study_infoResultMap">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "my_study_date" column="my_study_date"/>
+	<result property = "study_no" column="study_no"/>
+	<result property = "my_study_time" column="my_study_time"/>
+	<result property = "my_study_content" column="my_study_content"/>
+	<result property = "my_study_place" column="my_study_place"/>
+</resultMap>
+
+
+<select id="selectStudyInfoByDate" parameterType="String" resultMap="study_infoResultMap">
+	select *
+	from study_info
+	where my_study_date = #{my_study_date} and study_no = #{study_no}
+</select>
+
+
+
+<select id="selectDateByStudy" parameterType="int" resultMap="study_infoResultMap">
+	select *
+	from study_info
+	where study_no = #{value}
+	order by my_study_date asc
+</select>
+
+
+
+<insert id="insertMy_Study_Date" parameterType="StudyInfo">
+   insert into study_info(
+   my_study_date,
+   study_no,
+   my_study_time,
+   my_study_content,
+   my_study_place
+   )
+   values(
+   #{my_study_date},
+   #{study_no},
+   #{my_study_time},
+   #{my_study_content},
+   #{my_study_place}
+   )
+</insert>
+
+
+<update id="updateStudy_Info" parameterType="StudyInfo">
+	update study_info 
+	set my_study_time = #{my_study_time}, my_study_content = #{my_study_content}, my_study_place = #{my_study_place}
+	where my_study_date = #{my_study_date} and study_no = #{study_no}
+</update>
+
+
+<delete id="deleteStudy_Info" parameterType="StudyInfo">
+	delete from study_info
+	where my_study_date = #{my_study_date} and study_no = #{study_no}
+</delete>
+
+
+
+
+</mapper>

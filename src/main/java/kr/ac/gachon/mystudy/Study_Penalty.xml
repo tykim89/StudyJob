@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+
+<mapper namespace="study_penalty">
+
+<resultMap type="StudyPenalty" id="study_penaltyResultMap">
+<!-- property에는 대소문자 구분해줘야함!!! -->
+	<result property = "study_no" column="study_no"/>
+	<result property = "lateness_money" column="lateness_money"/>
+	<result property = "absant_money" column="absant_money"/>
+</resultMap>
+
+
+<select id="selectMoneyByNum" parameterType="int" resultMap="study_penaltyResultMap">
+	select *
+	from study_penalty
+	where study_no = #{value}
+</select>
+
+
+<update id="updateStudy_Penalty" parameterType="StudyPenalty">
+	update study_penalty 
+	set lateness_money = #{lateness_money}, absant_money = #{absant_money}
+	where study_no = #{study_no}
+</update>
+
+<insert id="insertStudyPenalty" parameterType="StudyPenalty">
+	insert into study_penalty(
+			study_no, lateness_money, absant_money
+			)
+	values(
+			#{study_no},
+			#{lateness_money},
+			#{absant_money})
+</insert>
+
+</mapper>
+
+
+
+
+
+
+
